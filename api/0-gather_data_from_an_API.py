@@ -1,22 +1,25 @@
+
 #!/usr/bin/python3
+"""Script that returns TODO list progress for a given employee ID."""
 import requests
 import sys
-
-
+ 
+ 
 if __name__ == "__main__":
     employee_id = int(sys.argv[1])
     base_url = "https://jsonplaceholder.typicode.com"
-
-    user = requests.get(f"{base_url}/users/{employee_id}").json()
+ 
+    user = requests.get("{}/users/{}".format(base_url, employee_id)).json()
     todos = requests.get(
-        f"{base_url}/todos", params={"userId": employee_id}
+        "{}/todos".format(base_url), params={"userId": employee_id}
     ).json()
-
-    done_tasks = [task for task in todos if task.get("completed")]
+ 
     employee_name = user.get("name")
     total = len(todos)
+    done_tasks = [task for task in todos if task.get("completed")]
     done = len(done_tasks)
-
-    print(f"Employee {employee_name} is done with tasks({done}/{total}):")
+ 
+    print("Employee {} is done with tasks({}/{}):".format(
+        employee_name, done, total))
     for task in done_tasks:
-        print(f"\t {task.get('title')}")
+        print("\t {}".format(task.get("title")))
