@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+"""Script that returns TODO list progress for a given employee ID.
+
+This script uses the REST API to fetch employee information
+and their TODO list, then displays the progress.
+"""
 import requests
 import sys
 
@@ -17,4 +22,4 @@ if __name__ == "__main__":
     print("Employee {} is done with tasks({}/{}):".format(
         employee_name, done, total))
     for task in done_tasks:
-        print("	 {}".format(task.get("title")))
+        print("\t {}".format(task.get("title")))
