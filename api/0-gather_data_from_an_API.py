@@ -2,6 +2,8 @@
 """Script that returns TODO list progress for a given employee ID."""
 import requests
 import sys
+
+
 if __name__ == "__main__":
     BASE_URL = "https://jsonplaceholder.typicode.com"
     employee = requests.get(
