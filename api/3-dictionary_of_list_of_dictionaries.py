@@ -1,47 +1,33 @@
 #!/usr/bin/python3
 """
-Retrieves employee tasks from an API and exports data in JSON format.
+Using a REST API and an EMP_ID, save info about their TODO list in a json file
 """
 import json
 import requests
+import sys
 
+if __name__ == "__main__":
+    """ Main section """
+    BASE_URL = 'https://jsonplaceholder.typicode.com'
+    employee_id = sys.argv[1] if len(sys.argv) > 1 else None
 
-def get_employee_tasks(employee_id):
-    """
-    Fetches tasks for a specific employee from the API.
-    """
-    base_url = "https://jsonplaceholder.typicode.com"
-    user_info = requests.get(f"{base_url}/users/{employee_id}").json()
-    employee_username = user_info["username"]
+    if not employee_id:
+        print("Please provide an employee ID as an argument.")
+        sys.exit(1)
 
-    todos_url = f"{base_url}/users/{employee_id}/todos"
-    todos_info = requests.get(todos_url).json()
+    employee = requests.get(f"{BASE_URL}/users/{employee_id}/").json()
+    employee_name = employee.get("username")
+    emp_todos = requests.get(f"{BASE_URL}/users/{employee_id}/todos").json()
+    serialized_todos = []
 
-    return [
-        {
-            "username": employee_username,
-            "task": task["title"],
-            "completed": task["completed"],
-        }
-        for task in todos_info
-    ]
+    for todo in emp_todos:
+        serialized_todos.append({
+            "task": todo.get("title"),
+            "completed": todo.get("completed"),
+            "username": employee_name
+        })
 
+    output_data = {employee_id: serialized_todos}
 
-def get_all_employee_ids():
-    """
-    Fetches all employee IDs available in the API.
-    """
-    base_url = "https://jsonplaceholder.typicode.com/users"
-    users_info = requests.get(base_url).json()
-    ids = [user["id"] for user in users_info]
-    return ids
-
-
-if __name__ == '__main__':
-    all_employee_ids = get_all_employee_ids()
-
-    with open('todo_all_employees.json', "w") as json_file:
-        all_employees_tasks = {}
-        for emp_id in all_employee_ids:
-            all_employees_tasks[str(emp_id)] = get_employee_tasks(emp_id)
-        json_file.write(json.dumps(all_employees_tasks, indent=4))
+    with open(f"{employee_id}.json", 'w') as file:
+        json.dump(output_data, file)
