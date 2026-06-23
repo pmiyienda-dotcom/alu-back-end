@@ -1,33 +1,37 @@
 #!/usr/bin/python3
-"""
-Using a REST API and an EMP_ID, save info about their TODO list in a json file
-"""
+"""Script that gets user data (Todo list) from API
+and then export the result to csv file. """
+
 import json
 import requests
-import sys
 
-if __name__ == "__main__":
-    """ Main section """
-    BASE_URL = 'https://jsonplaceholder.typicode.com'
-    employee_id = sys.argv[1] if len(sys.argv) > 1 else None
 
-    if not employee_id:
-        print("Please provide an employee ID as an argument.")
-        sys.exit(1)
+def main():
+    """main function"""
+    todo_url = 'https://jsonplaceholder.typicode.com/todos'
 
-    employee = requests.get(f"{BASE_URL}/users/{employee_id}/").json()
-    employee_name = employee.get("username")
-    emp_todos = requests.get(f"{BASE_URL}/users/{employee_id}/todos").json()
-    serialized_todos = []
+    response = requests.get(todo_url)
 
-    for todo in emp_todos:
-        serialized_todos.append({
-            "task": todo.get("title"),
-            "completed": todo.get("completed"),
-            "username": employee_name
-        })
+    output = {}
 
-    output_data = {employee_id: serialized_todos}
+    for todo in response.json():
+        user_id = todo.get('userId')
+        if user_id not in output.keys():
+            output[user_id] = []
+            user_url = 'https://jsonplaceholder.typicode.com/users/{}'.format(
+                user_id)
+            user_name = requests.get(user_url).json().get('username')
 
-    with open(f"{employee_id}.json", 'w') as file:
-        json.dump(output_data, file)
+        output[user_id].append(
+            {
+                "username": user_name,
+                "task": todo.get('title'),
+                "completed": todo.get('completed')
+            })
+
+    with open("todo_all_employees.json", 'w') as file:
+        json.dump(output, file)
+
+
+if __name__ == '__main__':
+    main()
