@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-"""Script that returns TODO list progress for a given employee ID."""
 import requests
 import sys
 if __name__ == "__main__":
