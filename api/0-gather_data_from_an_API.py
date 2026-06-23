@@ -2,8 +2,6 @@
 """Script that returns TODO list progress for a given employee ID."""
 import requests
 import sys
-
-
 if __name__ == "__main__":
     BASE_URL = "https://jsonplaceholder.typicode.com"
     employee = requests.get(
@@ -16,4 +14,4 @@ if __name__ == "__main__":
     print("Employee {} is done with tasks({}/{}):".format(
         EMPLOYEE_NAME, COMPLETED_LEN, len(employee_todos)))
     for task in done_tasks:
-        print("	 {}".format(task.get("title")))
+        print("\t {}".format(task.get("title")))
